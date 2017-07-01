@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-import mathplotlab.pyplot as plt
+import matplotlib.pyplot as plt
 
 def symbol_to_path(symbol, base_dir='data'):
     return os.path.join(base_dir, '{}.csv'.format(str(symbol)))
