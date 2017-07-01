@@ -2,8 +2,15 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 
+
 def symbol_to_path(symbol, base_dir='data'):
-    return os.path.join(base_dir, '{}.csv'.format(str(symbol)))
+    dir = os.path.dirname(__file__)
+
+    return os.path.join(dir, base_dir, '{}.csv'.format(str(symbol)))
+
+def fill_missing_values(df):
+    df.fillna(method='ffill', inplace=True)
+    df.fillna(method='bfill', inplace=True)
 
 def get_data(symbols, dates):
     df = pd.DataFrame(index=dates)
@@ -23,8 +30,10 @@ def get_data(symbols, dates):
         if symbol == 'SPY':
             df = df.dropna(subset=['SPY'])
 
-        return df
+    return df
 
+def normalize_data(df):
+    return df / df.ix[0,:]
 
 def plot_selected(df, columns, start_date, end_date):
     df[start_date:end_date][columns].plot()
@@ -37,11 +46,14 @@ def plot_data(df, title='Stock Price'):
     plt.show()
 
 def test_run():
-    dates = pd.date_range('2010-01-01', '2010-12-31')
     symbols = ['GOOG', 'AAPL', 'GLD', 'IBM']
+    start_date = '2010-01-01'
+    end_date = '2010-12-31'
 
-    df = get_data(symbols, dates)
-    plot_selected(df, ['SPY', 'IBM'], '2010-03-01', '2010-04-01')
+    dates = pd.date_range(start_date, end_date)
+    df = normalize_data(get_data(symbols, dates))
+    fill_missing_values(df)
+    plot_data(df)
 
 if __name__ == "__main__":
     test_run()
